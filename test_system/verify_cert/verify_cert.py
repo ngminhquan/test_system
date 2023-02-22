@@ -26,7 +26,7 @@ class verify_cert(object):
         if _hash != new_hash:
             print('INVALID')
         else:
-            return text
+            return 'VALID'
 
 
 
@@ -41,8 +41,9 @@ class verify_cert(object):
        
         b = b_0 + msg
         return b
-
+'''
 ver = verify_cert(b'12345')
 a = b"\t12345\x00\x00\x00\x00\x00\x00\x00\x00\x00\x0512345\x9f\x7f\x0f\xfc\x86@[\xa0\x88k\x0f\x17\xd7\xe4\xd8'\x91\xd1\xe2\xb8\xef\x7f7\x1cLN\x03\x01~\x10\x01?"
 
 print(ver.verify(a))
+'''
