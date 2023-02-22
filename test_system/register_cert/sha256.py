@@ -1,3 +1,7 @@
+import struct
+import sys
+
+
 K = [
     0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
     0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
@@ -136,6 +140,89 @@ def ROTR(num: int, shift: int, size: int = 32):
     
     return (num >> shift) | (num << size - shift)
 
+
+#convert bytes -> long and long -> bytes
+def long_to_bytes(n, blocksize=0):
+
+    if n < 0 or blocksize < 0:
+        raise ValueError("Values must be non-negative")
+
+    result = []
+    pack = struct.pack
+
+    # Fill the first block independently from the value of n
+    bsr = blocksize
+    while bsr >= 8:
+        result.insert(0, pack('>Q', n & 0xFFFFFFFFFFFFFFFF))
+        n = n >> 64
+        bsr -= 8
+
+    while bsr >= 4:
+        result.insert(0, pack('>I', n & 0xFFFFFFFF))
+        n = n >> 32
+        bsr -= 4
+
+    while bsr > 0:
+        result.insert(0, pack('>B', n & 0xFF))
+        n = n >> 8
+        bsr -= 1
+
+    if n == 0:
+        if len(result) == 0:
+            bresult = b'\x00'
+        else:
+            bresult = b''.join(result)
+    else:
+        # The encoded number exceeds the block size
+        while n > 0:
+            result.insert(0, pack('>Q', n & 0xFFFFFFFFFFFFFFFF))
+            n = n >> 64
+        result[0] = result[0].lstrip(b'\x00')
+        bresult = b''.join(result)
+        # bresult has minimum length here
+        if blocksize > 0:
+            target_len = ((len(bresult) - 1) // blocksize + 1) * blocksize
+            bresult = b'\x00' * (target_len - len(bresult)) + bresult
+
+    return bresult
+
+
+def bytes_to_long(s):
+    """Convert a byte string to a long integer (big endian).
+
+    In Python 3.2+, use the native method instead::
+
+        >>> int.from_bytes(s, 'big')
+
+    For instance::
+
+        >>> int.from_bytes(b'\x00P', 'big')
+        80
+
+    This is (essentially) the inverse of :func:`long_to_bytes`.
+    """
+    acc = 0
+
+    unpack = struct.unpack
+
+    # Up to Python 2.7.4, struct.unpack can't work with bytearrays nor
+    # memoryviews
+    if sys.version_info[0:3] < (2, 7, 4):
+        if isinstance(s, bytearray):
+            s = bytes(s)
+        elif isinstance(s, memoryview):
+            s = s.tobytes()
+
+    length = len(s)
+    if length % 4:
+        extra = (4 - length % 4)
+        s = b'\x00' * extra + s
+        length = length + extra
+    for i in range(0, length, 4):
+        acc = (acc << 32) + unpack('>I', s[i:i+4])[0]
+    return acc
+'''
 data = b'12345'
 if __name__ == "__main__":
     print(hash_function(data).hex())
+'''
