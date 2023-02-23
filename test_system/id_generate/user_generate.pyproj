@@ -5,7 +5,8 @@
     <ProjectGuid>ea1e8171-3a75-470a-8202-9f22fba26a58</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>id_generate.py</StartupFile>
+    <StartupFile>
+    </StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -22,9 +23,12 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="aes_old.py" />
-    <Compile Include="id_generate.py" />
-    <Compile Include="PandQ_gen.py" />
+    <Folder Include="id_gen\" />
+    <Folder Include="PU_gen\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="id_gen\aes_old.py" />
+    <Compile Include="id_gen\id_generate.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
